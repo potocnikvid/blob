@@ -16,7 +16,7 @@ import("@mediapipe/tasks-vision").then(({FilesetResolver, DrawingUtils, PoseLand
 
   const demosSection = document.getElementById("demos");
 
-  let poseLandmarker: PoseLandmarker;
+  let poseLandmarker: any;
   let webcamRunning: Boolean = false;
   const videoHeight = "360px";
   const videoWidth = "480px";
