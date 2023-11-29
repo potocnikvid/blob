@@ -107,8 +107,8 @@ NoiseBlob.prototype.init_shader = function(){
               u_exposure: {value: 2.},
               u_gamma: {value: 2.2}
           },
-          vertexShader:   skybox_vert,
-          fragmentShader: skybox_frag
+          // vertexShader:   skybox_vert,
+          // fragmentShader: skybox_frag
       });
 
   // scene shdr

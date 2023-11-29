@@ -61,12 +61,12 @@ var update = function(){
         + 30. * m_analyzer.get_level();
 
     // update light
-    // if(m_ctrl.params.light_ziggle) 
-    //     m_light.ziggle( m_renderer.timer );
+    if(m_ctrl.params.light_ziggle) 
+        m_light.ziggle( m_renderer.timer );
 
     // update renderer
-    if(m_ctrl.params.cam_ziggle) 
-        m_renderer.ziggle_cam(m_analyzer.get_history());
+    // if(m_ctrl.params.cam_ziggle) 
+    //     m_renderer.ziggle_cam(m_analyzer.get_history());
     m_renderer.render(m_render_queue);
 };
 
