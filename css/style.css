@@ -7,6 +7,7 @@ body{
   font-family: Helvetica, arial, sans-serif;
 }   
 canvas{
+  z-index: -1;
   position: fixed;
   left: 0px;
   top: 0px;

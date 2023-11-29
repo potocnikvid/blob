@@ -4,8 +4,7 @@
   "description": "",
   "main": "waveform.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc js/pose.ts -w -t es2015 --module nodenext"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
