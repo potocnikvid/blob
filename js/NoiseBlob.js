@@ -188,32 +188,96 @@ NoiseBlob.prototype.init_texture = function(){
 };
 
 NoiseBlob.prototype.init_scene = function(){
-  var _sphere_size = .7;
-  var _geom = new THREE.SphereBufferGeometry(_sphere_size, 128, 128);
-  var _geom_lowres = new THREE.SphereBufferGeometry(_sphere_size, 64, 64);
+  // Function to create a 3D star geometry
+  function createCurved3DStarGeometry(radius, innerRadius, numPoints, depth, curveAmount) {
+    var geometry = new THREE.Geometry();
+
+    function addStarPoints(z, inward) {
+      for (let i = 0; i < numPoints * 2; i++) {
+          var r = (i % 2 === 0) ? radius : innerRadius;
+          var angle = (i / (numPoints * 2)) * Math.PI * 2;
+
+          var x = Math.cos(angle) * r;
+          var y = Math.sin(angle) * r;
+
+          // Apply curve
+          var curve = inward ? -curveAmount : curveAmount;
+          var curvedZ = z + curve * Math.sin(i / numPoints * Math.PI);
+
+          geometry.vertices.push(new THREE.Vector3(x, y, curvedZ));
+      }
+  }
+
+
+    // Add front and back star points
+    addStarPoints(depth / 2); // Front points
+    addStarPoints(-depth / 2); // Back points
+
+    // Create faces for the front and back stars
+    for (let i = 0; i < numPoints * 2; i++) {
+        let nextIndex = (i + 2) % (numPoints * 2);
+        let innerIndex = (i + 1) % (numPoints * 2);
+
+        // Front face
+        geometry.faces.push(new THREE.Face3(0, innerIndex, nextIndex));
+        // Back face
+        let offset = numPoints * 2;
+        geometry.faces.push(new THREE.Face3(offset, innerIndex + offset, nextIndex + offset));
+    }
+
+    // Create side faces to give depth
+    for (let i = 0; i < numPoints * 2; i++) {
+        let nextIndex = (i + 1) % (numPoints * 2);
+        let frontIndex = i;
+        let backIndex = i + numPoints * 2;
+
+        let frontNextIndex = nextIndex;
+        let backNextIndex = nextIndex + numPoints * 2;
+
+        geometry.faces.push(new THREE.Face3(frontIndex, backIndex, frontNextIndex));
+        geometry.faces.push(new THREE.Face3(backIndex, backNextIndex, frontNextIndex));
+    }
+
+    geometry.computeFaceNormals(); // Compute normals for lighting
+    return geometry;
+  }
+
+  // Usage example:
+  // this.starGeometry = createCurved3DStarGeometry(0.5, 1, 5, 1, 0.2); // 5 points star with a depth of 1
+  // var material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false });
+  // var starMesh = new THREE.Mesh(this.starGeometry, material);
+
+  // // Add starMesh to your scene
+  // // scene.add(starMesh);
+  // var _geom = this.starGeometry;
+
+
+  var _sphere_size = .5;
+  var _geom = new THREE.SphereBufferGeometry(_sphere_size, 64, 64);
+  // var _geom_lowres = new THREE.SphereBufferGeometry(_sphere_size, 4, 4);
 
   this.scene = new THREE.Scene();
   this.shadow_scene = new THREE.Scene();
 
   var _mesh = new THREE.Mesh(_geom, this.shdr_mesh);
-  var _wire = new THREE.Line(_geom_lowres, this.shdr_wire);
   var _points = new THREE.Points(_geom, this.shdr_points);
   var _shadow_mesh = new THREE.Mesh(_geom, this.shdr_shadow);
+  // var _wire = new THREE.Line(_geom_lowres, this.shdr_wire);
 
-  var _pop_points = new THREE.Points(_geom_lowres, this.shdr_pop_points);
-  var _pop_wire = new THREE.Line(_geom_lowres, this.shdr_pop_wire);
+  // var _pop_points = new THREE.Points(_geom_lowres, this.shdr_pop_points);
+  // var _pop_wire = new THREE.Line(_geom_lowres, this.shdr_pop_wire);
 
-  var _pop_points_out = new THREE.Points(_geom_lowres, this.shdr_pop_points_out);
-  var _pop_wire_out = new THREE.Line(_geom_lowres, this.shdr_pop_wire_out);
-  
+  // var _pop_points_out = new THREE.Points(_geom_lowres, this.shdr_pop_points_out);
+  // var _pop_wire_out = new THREE.Line(_geom_lowres, this.shdr_pop_wire_out);
+  console.log(_mesh)
   this.scene.add(_mesh);
-  this.scene.add(_wire);
   this.scene.add(_points);
+  // this.scene.add(_wire);
 
-  this.scene.add(_pop_points);
-  this.scene.add(_pop_wire);
-  this.scene.add(_pop_points_out);
-  this.scene.add(_pop_wire_out);
+  // this.scene.add(_pop_points);
+  // this.scene.add(_pop_wire);
+  // this.scene.add(_pop_points_out);
+  // this.scene.add(_pop_wire_out);
 
   this.shadow_scene.add(_shadow_mesh);
 
@@ -298,6 +362,56 @@ NoiseBlob.prototype.set_PBR = function(_pbr){
   this.shdr_mesh.defines.IS_PBR = 'true';
 };
 
+// Define constants for influence and smoothing
+const influenceFactor = 0.1;  // Adjust the influence strength
+const smoothingFactor = 0.8;  // Adjust the smoothing factor
+
+// Function to deform the NoiseBlob mesh
+function deformNoiseBlob(NoiseBlobMesh, headPosition, leftArmPosition, rightArmPosition, leftLegPosition, rightLegPosition) {
+    // Iterate over the vertices of the NoiseBlobMesh
+    for (let i = 0; i < NoiseBlobMesh.geometry.vertices.length; i++) {
+        const vertex = NoiseBlobMesh.geometry.vertices[i];
+
+        // Calculate the target position based on the predefined points
+        const targetPosition = calculateTargetPosition(vertex.position, headPosition, leftArmPosition, rightArmPosition, leftLegPosition, rightLegPosition);
+
+        // Smoothly move the vertex towards the target position
+        vertex.x = lerp(vertex.x, targetPosition.x, influenceFactor * smoothingFactor);
+        vertex.y = lerp(vertex.y, targetPosition.y, influenceFactor * smoothingFactor);
+        vertex.z = lerp(vertex.z, targetPosition.z, influenceFactor * smoothingFactor);
+    }
+
+    // Update the NoiseBlobMesh geometry
+    NoiseBlobMesh.geometry.verticesNeedUpdate = true;
+}
+
+// Function to calculate the target position
+function calculateTargetPosition(currentPosition, headPosition, leftArmPosition, rightArmPosition, leftLegPosition, rightLegPosition) {
+    // Define weights for each body part
+    const headWeight = 1.0;
+    const leftArmWeight = 0.5;
+    const rightArmWeight = 0.5;
+    const leftLegWeight = 0.5;
+    const rightLegWeight = 0.5;
+
+    // Calculate the weighted average of predefined points to get the target position
+    const totalWeight = headWeight + leftArmWeight + rightArmWeight + leftLegWeight + rightLegWeight;
+    const weightedSum = new THREE.Vector3()
+        .copy(headPosition)
+        .multiplyScalar(headWeight)
+        .addScaledVector(leftArmPosition, leftArmWeight)
+        .addScaledVector(rightArmPosition, rightArmWeight)
+        .addScaledVector(leftLegPosition, leftLegWeight)
+        .addScaledVector(rightLegPosition, rightLegWeight);
+
+    return weightedSum.divideScalar(totalWeight);
+}
+
+// Function for linear interpolation (lerp)
+function lerp(currentPosition, targetPosition, alpha) {
+    return currentPosition.clone().lerp(targetPosition, alpha);
+}
+
 NoiseBlob.prototype.update_PBR = function(){
   this.shdr_mesh.uniforms.u_normal.value = this.pbr.get_normal();
   this.shdr_mesh.uniforms.u_roughness.value = this.pbr.get_roughness();
@@ -306,7 +420,19 @@ NoiseBlob.prototype.update_PBR = function(){
   this.shdr_mesh.uniforms.u_exposure.value = this.pbr.get_exposure();
   this.shdr_mesh.uniforms.u_gamma.value = this.pbr.get_gamma();
 
-  this.shdr_mesh.uniforms.u_view_matrix_inverse.value = this.renderer.get_inversed_matrix();
+  // this.shdr_mesh.uniforms.u_view_matrix_inverse.value = this.renderer.get_inversed_matrix();
+  //     // Star geometry animation
+  //     if (this.starGeometry) {
+  //       var time = Date.now() * 0.001;
+  //       this.starGeometry.vertices.forEach(function(vertex, index) {
+  //           var curve = Math.sin(time + index * 0.2); // Adjust for desired effect
+  //           vertex.z += curve * 0.01; // Adjust amplitude for more/less movement
+  //       });
+
+  //       this.starGeometry.verticesNeedUpdate = true; // Mark the geometry as updated
+  //   }
+  // deformNoiseBlob(this._mesh, headPosition, leftArmPosition, rightArmPosition, leftLegPosition, rightLegPosition);
+
 };
 
 NoiseBlob.prototype.debug_shadow_map = function(_show){
