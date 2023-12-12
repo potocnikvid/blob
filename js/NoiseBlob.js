@@ -243,41 +243,40 @@ NoiseBlob.prototype.init_scene = function(){
   }
 
   // Usage example:
-  // this.starGeometry = createCurved3DStarGeometry(0.5, 1, 5, 1, 0.2); // 5 points star with a depth of 1
-  // var material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false });
-  // var starMesh = new THREE.Mesh(this.starGeometry, material);
+  this.starGeometry = createCurved3DStarGeometry(0.5, 1, 5, 1, 0.2); // 5 points star with a depth of 1
+  var material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false });
+  var starMesh = new THREE.Mesh(this.starGeometry, material);
 
-  // // Add starMesh to your scene
-  // // scene.add(starMesh);
-  // var _geom = this.starGeometry;
+  // Add starMesh to your scene
+  // scene.add(starMesh);
+  this._geom = this.starGeometry;
 
 
   var _sphere_size = .5;
-  var _geom = new THREE.SphereBufferGeometry(_sphere_size, 64, 64);
-  // var _geom_lowres = new THREE.SphereBufferGeometry(_sphere_size, 4, 4);
+  // this._geom = new THREE.SphereBufferGeometry(_sphere_size, 64, 64);
+  var _geom_lowres = new THREE.SphereBufferGeometry(_sphere_size, 4, 4);
 
   this.scene = new THREE.Scene();
   this.shadow_scene = new THREE.Scene();
 
-  var _mesh = new THREE.Mesh(_geom, this.shdr_mesh);
-  var _points = new THREE.Points(_geom, this.shdr_points);
-  var _shadow_mesh = new THREE.Mesh(_geom, this.shdr_shadow);
-  // var _wire = new THREE.Line(_geom_lowres, this.shdr_wire);
+  this._mesh = new THREE.Mesh(this._geom, this.shdr_mesh);
+  var _points = new THREE.Points(this._geom, this.shdr_points);
+  var _shadow_mesh = new THREE.Mesh(this._geom, this.shdr_shadow);
+  var _wire = new THREE.Line(_geom_lowres, this.shdr_wire);
 
-  // var _pop_points = new THREE.Points(_geom_lowres, this.shdr_pop_points);
-  // var _pop_wire = new THREE.Line(_geom_lowres, this.shdr_pop_wire);
+  var _pop_points = new THREE.Points(_geom_lowres, this.shdr_pop_points);
+  var _pop_wire = new THREE.Line(_geom_lowres, this.shdr_pop_wire);
 
-  // var _pop_points_out = new THREE.Points(_geom_lowres, this.shdr_pop_points_out);
-  // var _pop_wire_out = new THREE.Line(_geom_lowres, this.shdr_pop_wire_out);
-  console.log(_mesh)
-  this.scene.add(_mesh);
+  var _pop_points_out = new THREE.Points(_geom_lowres, this.shdr_pop_points_out);
+  var _pop_wire_out = new THREE.Line(_geom_lowres, this.shdr_pop_wire_out);
+  this.scene.add(this._mesh);
   this.scene.add(_points);
-  // this.scene.add(_wire);
+  this.scene.add(_wire);
 
-  // this.scene.add(_pop_points);
-  // this.scene.add(_pop_wire);
-  // this.scene.add(_pop_points_out);
-  // this.scene.add(_pop_wire_out);
+  this.scene.add(_pop_points);
+  this.scene.add(_pop_wire);
+  this.scene.add(_pop_points_out);
+  this.scene.add(_pop_wire_out);
 
   this.shadow_scene.add(_shadow_mesh);
 
@@ -369,20 +368,21 @@ const smoothingFactor = 0.8;  // Adjust the smoothing factor
 // Function to deform the NoiseBlob mesh
 function deformNoiseBlob(NoiseBlobMesh, headPosition, leftArmPosition, rightArmPosition, leftLegPosition, rightLegPosition) {
     // Iterate over the vertices of the NoiseBlobMesh
-    for (let i = 0; i < NoiseBlobMesh.geometry.vertices.length; i++) {
-        const vertex = NoiseBlobMesh.geometry.vertices[i];
+    console.log(NoiseBlobMesh)
+    // for (let i = 0; i < NoiseBlobMesh.geometry.vertices.length; i++) {
+    //     const vertex = NoiseBlobMesh.geometry.vertices[i];
 
-        // Calculate the target position based on the predefined points
-        const targetPosition = calculateTargetPosition(vertex.position, headPosition, leftArmPosition, rightArmPosition, leftLegPosition, rightLegPosition);
+    //     // Calculate the target position based on the predefined points
+    //     const targetPosition = calculateTargetPosition(vertex.position, headPosition, leftArmPosition, rightArmPosition, leftLegPosition, rightLegPosition);
 
-        // Smoothly move the vertex towards the target position
-        vertex.x = lerp(vertex.x, targetPosition.x, influenceFactor * smoothingFactor);
-        vertex.y = lerp(vertex.y, targetPosition.y, influenceFactor * smoothingFactor);
-        vertex.z = lerp(vertex.z, targetPosition.z, influenceFactor * smoothingFactor);
-    }
+    //     // Smoothly move the vertex towards the target position
+    //     vertex.x = lerp(vertex.x, targetPosition.x, influenceFactor * smoothingFactor);
+    //     vertex.y = lerp(vertex.y, targetPosition.y, influenceFactor * smoothingFactor);
+    //     vertex.z = lerp(vertex.z, targetPosition.z, influenceFactor * smoothingFactor);
+    // }
 
-    // Update the NoiseBlobMesh geometry
-    NoiseBlobMesh.geometry.verticesNeedUpdate = true;
+    // // Update the NoiseBlobMesh geometry
+    // NoiseBlobMesh.geometry.verticesNeedUpdate = true;
 }
 
 // Function to calculate the target position
@@ -431,7 +431,7 @@ NoiseBlob.prototype.update_PBR = function(){
 
   //       this.starGeometry.verticesNeedUpdate = true; // Mark the geometry as updated
   //   }
-  // deformNoiseBlob(this._mesh, headPosition, leftArmPosition, rightArmPosition, leftLegPosition, rightLegPosition);
+  // deformNoiseBlob(this._geom, poseLandmarks.head, poseLandmarks.left_hand, poseLandmarks.right_hand, poseLandmarks.left_foot, poseLandmarks.right_foot);
 
 };
 

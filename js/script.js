@@ -7,7 +7,7 @@ var m_pbr;
 var m_light;
 var m_ctrl;
 var m_device_checker;
-var poseLandmarks;
+var poseLandmarks = {left_hand: undefined, right_hand: undefined, head: undefined, left_foot:undefined, right_foot:undefined}
 
 const video = document.getElementsByClassName("input_video")[0];
 const out = document.getElementsByClassName("output")[0];
@@ -20,6 +20,12 @@ function zColor(data) {
   
   function onResultsPose(results) {
     console.log(results)
+    poseLandmarks.head = results.poseLandmarks[0]
+    poseLandmarks.left_hand = results.poseLandmarks[15]
+    poseLandmarks.right_hand = results.poseLandmarks[16]
+    poseLandmarks.left_foot = results.poseLandmarks[27]
+    poseLandmarks.right_foot = results.poseLandmarks[28]
+
     document.body.classList.add("loaded");
     canvasCtx5.save();
     canvasCtx5.clearRect(0, 0, out.width, out.height);
