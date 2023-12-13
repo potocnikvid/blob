@@ -17,12 +17,11 @@ var ThreePBR = function(){
     this.metallic_map.magFilter = THREE.LinearFilter;
     this.metallic_map.minFilter = THREE.LinearFilter;
 
-	this.normal = 1.;
-	this.roughness = .0;
-	this.metallic = 1.;
-
-	this.exposure = 2.;
-	this.gamma = 2.2;
+	this.normal = 5.;
+	this.roughness = 1.;
+	this.metallic = 0;
+	this.exposure = 10.;
+	this.gamma = 2.5;
 };
 
 ThreePBR.prototype.get_normal_map = function(){

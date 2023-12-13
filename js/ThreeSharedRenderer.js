@@ -46,11 +46,12 @@ ThreeSharedRenderer.prototype.resize = function(){
 }
 
 ThreeSharedRenderer.prototype.init_renderer = function(){
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
 
     this.renderer.setPixelRatio( window.devicePixelRatio );
     this.renderer.setSize( this.w, this.h );
-    
+    this.renderer.setClearColor( 0x000000, 0.4 );
+
     this.renderer.autoClear = false;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFShadowMap;

@@ -1,12 +1,14 @@
 var AudioAnalyzer = function(){
   this.is_init = false;
-  this.is_pulse = false;
+  this.get_stream();
+};
 
+AudioAnalyzer.prototype.get_stream = function(){
   navigator.getUserMedia = (
-      navigator.getUserMedia ||
-      navigator.webkitGetUserMedia ||
-      navigator.mozGetUserMedia ||
-      navigator.msGetUserMedia);
+    navigator.getUserMedia ||
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
+    navigator.msGetUserMedia);
 
   if (navigator.getUserMedia) {
       console.log('getUserMedia supported.');
@@ -19,8 +21,7 @@ var AudioAnalyzer = function(){
           this.init_without_stream();
       console.log('getUserMedia not supported on your browser!');
   }
-};
-
+}
 AudioAnalyzer.prototype.init = function(_stream){
   var _ctx = new (
       window.AudioContext || 
@@ -29,7 +30,6 @@ AudioAnalyzer.prototype.init = function(_stream){
       window.msAudioContext)();
 
   var _source = _ctx.createMediaStreamSource(_stream);
-
   // https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
   this.analyzer = _ctx.createAnalyser();
   this.analyzer.fftSize = 128;
@@ -38,7 +38,7 @@ AudioAnalyzer.prototype.init = function(_stream){
   _source.connect(this.gain);
   this.gain.connect(this.analyzer);
   this.gain.gain.value = 70.;
-
+  
   this.bass = 0.;
   this.mid = 0.;
   this.high = 0.;
@@ -54,6 +54,49 @@ AudioAnalyzer.prototype.init = function(_stream){
   console.log("audio analyzer is init");
   
   this.is_init = true;
+};
+
+
+AudioAnalyzer.prototype.currentSource = null; // Track the current audio source
+
+AudioAnalyzer.prototype.stop_current_song = function() {
+  if (this.currentSource) {
+    this.currentSource.stop(); // Stop the current song
+    this.currentSource.disconnect(this.analyzer); // Disconnect from the analyzer
+    this.currentSource = null;
+  }
+};
+
+AudioAnalyzer.prototype.load_and_play_song = function(songPath) {
+  this.stop_current_song(); // Ensure any currently playing song is stopped
+
+  var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  var gainNode = audioCtx.createGain(); // Create a GainNode
+  fetch(songPath)
+    .then(response => response.arrayBuffer())
+    .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
+    .then(audioBuffer => {
+      var source = audioCtx.createBufferSource();
+      source.buffer = audioBuffer;
+
+      source.connect(gainNode); // Connect the source to the gain node
+
+
+      this.analyzer = audioCtx.createAnalyser();
+      source.connect(this.analyzer);
+      this.analyzer.connect(audioCtx.destination);
+      gainNode.connect(audioCtx.destination); // Connect the gain node to the destination
+      // gainNode.connect(this.analyzer); // Connect the gain node to the analyzer
+
+      source.start(0); // Play the song
+      this.currentSource = source; // Keep track of the current source
+
+      source.onended = () => {
+        this.stop_current_song();
+        this.get_stream();
+      };
+    })
+    .catch(e => console.error(e));
 };
 
 AudioAnalyzer.prototype.init_without_stream = function(){
@@ -119,6 +162,10 @@ AudioAnalyzer.prototype.update = function(){
 AudioAnalyzer.prototype.reset_history = function(){
   this.history = 0.;
 };
+
+AudioAnalyzer.prototype.set_song = function(_song){
+  this.song = _song;
+}
 
 AudioAnalyzer.prototype.set_gain = function(_val){
   if(this.gain)

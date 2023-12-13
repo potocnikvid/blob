@@ -31,7 +31,9 @@ NoiseBlob.prototype.update = function(){
       _shdrs[i].uniforms.u_is_init.value = this.is_init;
       _shdrs[i].uniforms.u_t.value = this.timer;
       
+      // Pike
       _shdrs[i].uniforms.u_audio_high.value = this.audio_analyzer.get_high();
+
       _shdrs[i].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid();
       _shdrs[i].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass();
       _shdrs[i].uniforms.u_audio_level.value = this.audio_analyzer.get_level();
@@ -181,6 +183,8 @@ NoiseBlob.prototype.init_shader = function(){
 
 NoiseBlob.prototype.init_texture = function(){
   this.tex_sprite = new THREE.TextureLoader().load( "assets/sprite_additive_rect.png" );
+  // this.tex_sprite = new THREE.TextureLoader().load( "assets/warped_grid_texture.png" );
+
   this.tex_sprite.wrapS = THREE.ClampToEdgeWrapping;
   this.tex_sprite.wrapT = THREE.ClampToEdgeWrapping;
   this.tex_sprite.magFilter = THREE.LinearFilter;
@@ -244,24 +248,25 @@ NoiseBlob.prototype.init_scene = function(){
 
   // Usage example:
   this.starGeometry = createCurved3DStarGeometry(0.5, 1, 5, 1, 0.2); // 5 points star with a depth of 1
-  var material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: false });
+  var material = new THREE.MeshBasicMaterial({ color: 0xfff000, wireframe: false });
   var starMesh = new THREE.Mesh(this.starGeometry, material);
 
   // Add starMesh to your scene
   // scene.add(starMesh);
-  this._geom = this.starGeometry;
+  // this._geom = this.starGeometry;
 
 
   var _sphere_size = .5;
-  // this._geom = new THREE.SphereBufferGeometry(_sphere_size, 64, 64);
-  var _geom_lowres = new THREE.SphereBufferGeometry(_sphere_size, 4, 4);
+  var _wire_size = _sphere_size * 0.3;
+  this._geom = new THREE.SphereBufferGeometry(_sphere_size, 64, 64);
+  var _geom_lowres = new THREE.SphereBufferGeometry(_wire_size, 32, 32);
 
   this.scene = new THREE.Scene();
-  this.shadow_scene = new THREE.Scene();
+  // this.shadow_scene = new THREE.Scene();
 
   this._mesh = new THREE.Mesh(this._geom, this.shdr_mesh);
   var _points = new THREE.Points(this._geom, this.shdr_points);
-  var _shadow_mesh = new THREE.Mesh(this._geom, this.shdr_shadow);
+  // var _shadow_mesh = new THREE.Mesh(this._geom, this.shdr_shadow);
   var _wire = new THREE.Line(_geom_lowres, this.shdr_wire);
 
   var _pop_points = new THREE.Points(_geom_lowres, this.shdr_pop_points);
@@ -271,24 +276,17 @@ NoiseBlob.prototype.init_scene = function(){
   var _pop_wire_out = new THREE.Line(_geom_lowres, this.shdr_pop_wire_out);
   this.scene.add(this._mesh);
   this.scene.add(_points);
-  this.scene.add(_wire);
+  // this.scene.add(_wire);
 
   this.scene.add(_pop_points);
   this.scene.add(_pop_wire);
   this.scene.add(_pop_points_out);
-  this.scene.add(_pop_wire_out);
+  // this.scene.add(_pop_wire_out);
 
-  this.shadow_scene.add(_shadow_mesh);
+  // this.shadow_scene.add(_shadow_mesh);
 
   var _geom_cube = new THREE.BoxBufferGeometry(100, 100, 100);
   var _mesh_cube = new THREE.Mesh(_geom_cube, this.shdr_cubemap);
-
-  var mS = (new THREE.Matrix4()).identity();
-  mS.elements[0] = -1;
-  mS.elements[5] = -1;
-  mS.elements[10] = -1;
-
-  _geom_cube.applyMatrix(mS);
 
   this.scene.add(_mesh_cube);
 };
@@ -302,6 +300,13 @@ NoiseBlob.prototype.init_cubemap = function(){
   var _path = "assets/";
   var _format = '.jpg';
   var _urls = [
+    // _path + 'warped_grid_texture.avif', _path + 'warped_grid_texture.avif',
+    // _path + 'warped_grid_texture.avif', _path + 'warped_grid_texture.avif',
+    // _path + 'warped_grid_texture.avif', _path + 'warped_grid_texture.avif',
+    // _path + 'noise.jpeg', _path + 'noise.jpeg',
+    // _path + 'noise.jpeg', _path + 'noise.jpeg',
+    // _path + 'noise.jpeg', _path + 'noise.jpeg',
+
       _path + 'px_3js' + _format, _path + 'nx_3js' + _format,
       _path + 'py_3js' + _format, _path + 'ny_3js' + _format,
       _path + 'pz_3js' + _format, _path + 'nz_3js' + _format
@@ -311,6 +316,12 @@ NoiseBlob.prototype.init_cubemap = function(){
   this.cubemap.format = THREE.RGBFormat;
 
   _urls = [
+    // _path + 'warped_grid_texture.avif', _path + 'warped_grid_texture.avif',
+    // _path + 'warped_grid_texture.avif', _path + 'warped_grid_texture.avif',
+    // _path + 'warped_grid_texture.avif', _path + 'warped_grid_texture.avif',
+    // _path + 'noise.jpeg', _path + 'noise.jpeg',
+    // _path + 'noise.jpeg', _path + 'noise.jpeg',
+    // _path + 'noise.jpeg', _path + 'noise.jpeg',
       _path + 'px' + _format, _path + 'nx' + _format,
       _path + 'py' + _format, _path + 'ny' + _format,
       _path + 'pz' + _format, _path + 'nz' + _format
@@ -321,8 +332,10 @@ NoiseBlob.prototype.init_cubemap = function(){
 
   this.shdr_mesh.uniforms.cubemap = {value: this.cubemap};
   this.shdr_cubemap.uniforms.u_cubemap.value = this.cubemap;
+
   this.shdr_mesh.uniforms.cubemap_b = {value: this.cubemap_b};
   this.shdr_cubemap.uniforms.u_cubemap_b.value = this.cubemap_b;
+
   this.shdr_cubemap.uniforms.u_show_cubemap = {value:this.show_hdr};
   this.shdr_mesh.defines.HAS_CUBEMAP = 'true';
 };
@@ -361,56 +374,6 @@ NoiseBlob.prototype.set_PBR = function(_pbr){
   this.shdr_mesh.defines.IS_PBR = 'true';
 };
 
-// Define constants for influence and smoothing
-const influenceFactor = 0.1;  // Adjust the influence strength
-const smoothingFactor = 0.8;  // Adjust the smoothing factor
-
-// Function to deform the NoiseBlob mesh
-function deformNoiseBlob(NoiseBlobMesh, headPosition, leftArmPosition, rightArmPosition, leftLegPosition, rightLegPosition) {
-    // Iterate over the vertices of the NoiseBlobMesh
-    console.log(NoiseBlobMesh)
-    // for (let i = 0; i < NoiseBlobMesh.geometry.vertices.length; i++) {
-    //     const vertex = NoiseBlobMesh.geometry.vertices[i];
-
-    //     // Calculate the target position based on the predefined points
-    //     const targetPosition = calculateTargetPosition(vertex.position, headPosition, leftArmPosition, rightArmPosition, leftLegPosition, rightLegPosition);
-
-    //     // Smoothly move the vertex towards the target position
-    //     vertex.x = lerp(vertex.x, targetPosition.x, influenceFactor * smoothingFactor);
-    //     vertex.y = lerp(vertex.y, targetPosition.y, influenceFactor * smoothingFactor);
-    //     vertex.z = lerp(vertex.z, targetPosition.z, influenceFactor * smoothingFactor);
-    // }
-
-    // // Update the NoiseBlobMesh geometry
-    // NoiseBlobMesh.geometry.verticesNeedUpdate = true;
-}
-
-// Function to calculate the target position
-function calculateTargetPosition(currentPosition, headPosition, leftArmPosition, rightArmPosition, leftLegPosition, rightLegPosition) {
-    // Define weights for each body part
-    const headWeight = 1.0;
-    const leftArmWeight = 0.5;
-    const rightArmWeight = 0.5;
-    const leftLegWeight = 0.5;
-    const rightLegWeight = 0.5;
-
-    // Calculate the weighted average of predefined points to get the target position
-    const totalWeight = headWeight + leftArmWeight + rightArmWeight + leftLegWeight + rightLegWeight;
-    const weightedSum = new THREE.Vector3()
-        .copy(headPosition)
-        .multiplyScalar(headWeight)
-        .addScaledVector(leftArmPosition, leftArmWeight)
-        .addScaledVector(rightArmPosition, rightArmWeight)
-        .addScaledVector(leftLegPosition, leftLegWeight)
-        .addScaledVector(rightLegPosition, rightLegWeight);
-
-    return weightedSum.divideScalar(totalWeight);
-}
-
-// Function for linear interpolation (lerp)
-function lerp(currentPosition, targetPosition, alpha) {
-    return currentPosition.clone().lerp(targetPosition, alpha);
-}
 
 NoiseBlob.prototype.update_PBR = function(){
   this.shdr_mesh.uniforms.u_normal.value = this.pbr.get_normal();
@@ -420,18 +383,11 @@ NoiseBlob.prototype.update_PBR = function(){
   this.shdr_mesh.uniforms.u_exposure.value = this.pbr.get_exposure();
   this.shdr_mesh.uniforms.u_gamma.value = this.pbr.get_gamma();
 
-  // this.shdr_mesh.uniforms.u_view_matrix_inverse.value = this.renderer.get_inversed_matrix();
-  //     // Star geometry animation
-  //     if (this.starGeometry) {
-  //       var time = Date.now() * 0.001;
-  //       this.starGeometry.vertices.forEach(function(vertex, index) {
-  //           var curve = Math.sin(time + index * 0.2); // Adjust for desired effect
-  //           vertex.z += curve * 0.01; // Adjust amplitude for more/less movement
-  //       });
+  this.shdr_mesh.uniforms.u_view_matrix_inverse.value = this.renderer.get_inversed_matrix();
 
-  //       this.starGeometry.verticesNeedUpdate = true; // Mark the geometry as updated
-  //   }
-  // deformNoiseBlob(this._geom, poseLandmarks.head, poseLandmarks.left_hand, poseLandmarks.right_hand, poseLandmarks.left_foot, poseLandmarks.right_foot);
+  this.shdr_mesh.uniforms.tex_normal.value = this.pbr.get_normal_map();
+  this.shdr_mesh.uniforms.tex_roughness.value = this.pbr.get_roughness_map();
+  this.shdr_mesh.uniforms.tex_metallic.value = this.pbr.get_metallic_map();
 
 };
 

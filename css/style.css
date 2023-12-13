@@ -29,5 +29,16 @@ canvas{
 ::-webkit-scrollbar-thumb:window-inactive {
   background: #999; 
 }
+.dg .cr.number {
+  border-radius: 0;
+  font-size: 0.7rem;
+  display: list-item;
+  width: 100%;
+  border-left: 3px solid #2FA1D6;
+}
 
+span {
+  font-style: inherit;
+  font-weight: inherit;
+}
 
