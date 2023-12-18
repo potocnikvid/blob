@@ -1,6 +1,4 @@
-# ThreeJS audio visualizer
- 
+Link do projekta:
+https://blob-pi-ashy.vercel.app/
 
-Uses device mic to analyse sound into graphic particles utilizing AudioAnalyser, PointLight and other ThreeJS objects.
-
-Demo: https://jhugheswebdev.github.io/sound-equalizer-threejs/
+Projekta ni bilo možno oddati na učilnico, saj je prevelik. Zato sem ga naložil na Vercel.
