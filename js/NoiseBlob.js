@@ -377,57 +377,66 @@ NoiseBlob.prototype.set_PBR = function(_pbr){
 NoiseBlob.prototype.set_position = function(x, y) {
   this._mesh.position.x += x
   this._mesh.position.y += y
+  this._mesh_initial_pos = this._mesh.position.clone();
 
   this._points.position.x += x
   this._points.position.y += y
+  this._points_initial_pos = this._points.position.clone();
 
   this._wire.position.x += x
   this._wire.position.y += y
+  this._wire_initial_pos = this._wire.position.clone();
 
   this._pop_points.position.x += x
   this._pop_points.position.y += y
+  this._pop_points_initial_pos = this._pop_points.position.clone();
 
   this._pop_wire.position.x += x
   this._pop_wire.position.y += y
+  this._pop_wire_initial_pos = this._pop_wire.position.clone();
 
   this._pop_points_out.position.x += x
   this._pop_points_out.position.y += y
+  this._pop_points_out_initial_pos = this._pop_points_out.position.clone();
 
   this._pop_wire_out.position.x += x
   this._pop_wire_out.position.y += y
+  this._pop_wire_out_initial_pos = this._pop_wire_out.position.clone();
 
   this._mesh_cube.position.x += x
   this._mesh_cube.position.y += y
+  this._mesh_cube_initial_pos = this._mesh_cube.position.clone();
 
   // this._shadow_mesh.position.x += x
   // this._shadow_mesh.position.y += y
 }
 
 NoiseBlob.prototype.update_position = function(x, y) {
-  this._mesh.position.x += x
-  this._mesh.position.y += y
+  this._mesh.position.x = this._mesh_initial_pos.x + x
+  this._mesh.position.y = this._mesh_initial_pos.y + y
 
-  this._points.position.x += x
-  this._points.position.y += y
+  this._points.position.x = this._points_initial_pos.x + x
+  this._points.position.y = this._points_initial_pos.y + y
 
-  this._wire.position.x += x
-  this._wire.position.y += y
+  this._wire.position.x = this._wire_initial_pos.x + x
+  this._wire.position.y = this._wire_initial_pos.y + y
 
-  this._pop_points.position.x += x
-  this._pop_points.position.y += y
+  this._pop_points.position.x = this._pop_points_initial_pos.x + x
+  this._pop_points.position.y = this._pop_points_initial_pos.y + y
 
-  this._pop_wire.position.x += x
-  this._pop_wire.position.y += y
+  this._pop_wire.position.x = this._pop_wire_initial_pos.x + x
+  this._pop_wire.position.y = this._pop_wire_initial_pos.y + y
 
-  this._pop_points_out.position.x += x
-  this._pop_points_out.position.y += y
+  this._pop_points_out.position.x = this._pop_points_out_initial_pos.x + x
+  this._pop_points_out.position.y = this._pop_points_out_initial_pos.y + y
 
-  this._pop_wire_out.position.x += x
-  this._pop_wire_out.position.y += y
+  this._pop_wire_out.position.x = this._pop_wire_out_initial_pos.x + x
+  this._pop_wire_out.position.y = this._pop_wire_out_initial_pos.y + y
 
-  this._mesh_cube.position.x += x
-  this._mesh_cube.position.y += y
+  this._mesh_cube.position.x = this._mesh_cube_initial_pos.x + x
+  this._mesh_cube.position.y = this._mesh_cube_initial_pos.y + y
 
+  
   // this._shadow_mesh.position.x += x
   // this._shadow_mesh.position.y += y
 }

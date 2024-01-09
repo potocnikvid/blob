@@ -120,14 +120,14 @@ var init = function () {
   // init blob
   m_blob_left = new NoiseBlob(m_renderer, m_analyzer, m_light);
   m_blob_left.set_PBR(m_pbr);
-  m_blob_left.set_position(-1, 0);
+  m_blob_left.set_position(-2, 0);
 
   if (_is_retina) m_blob_left.set_retina();
 
   // init blob
   m_blob_right = new NoiseBlob(m_renderer, m_analyzer, m_light);
   m_blob_right.set_PBR(m_pbr);
-  m_blob_right.set_position(1, 0);
+  m_blob_right.set_position(2, 0);
   
   if (_is_retina) m_blob_right.set_retina();
 
@@ -152,13 +152,15 @@ var update = function () {
 
   // update blob
   m_blob_left.update_PBR();
-  // m_blob_left.update_position(poseLandmarks.left_hand);
+  if (poseLandmarks.left_hand.visibility > 0.7)
+    m_blob_left.update_position(-poseLandmarks.left_hand.x*2, -poseLandmarks.left_hand.y*2);
   m_renderer.render(blob_left_renderer);
 
   m_renderer.renderer.autoClear = false;
 
   m_blob_right.update_PBR();
-  // m_blob_right.update_position(poseLandmarks.right_hand);
+  if (poseLandmarks.left_hand.visibility > 0.7)
+    m_blob_right.update_position(-poseLandmarks.right_hand.x*2, -poseLandmarks.right_hand.y*2);
   m_renderer.render(blob_right_renderer);
 
   // update pbr
