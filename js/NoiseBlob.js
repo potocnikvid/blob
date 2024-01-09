@@ -210,7 +210,7 @@ NoiseBlob.prototype.init_scene = function(){
 
           geometry.vertices.push(new THREE.Vector3(x, y, curvedZ));
       }
-  }
+    }
 
 
     // Add front and back star points
@@ -265,30 +265,30 @@ NoiseBlob.prototype.init_scene = function(){
   // this.shadow_scene = new THREE.Scene();
 
   this._mesh = new THREE.Mesh(this._geom, this.shdr_mesh);
-  var _points = new THREE.Points(this._geom, this.shdr_points);
-  // var _shadow_mesh = new THREE.Mesh(this._geom, this.shdr_shadow);
-  var _wire = new THREE.Line(_geom_lowres, this.shdr_wire);
+  this._points = new THREE.Points(this._geom, this.shdr_points);
+  //this._shadow_mesh = new THREE.Mesh(this._geom, this.shdr_shadow);
+  this._wire = new THREE.Line(_geom_lowres, this.shdr_wire);
 
-  var _pop_points = new THREE.Points(_geom_lowres, this.shdr_pop_points);
-  var _pop_wire = new THREE.Line(_geom_lowres, this.shdr_pop_wire);
+  this._pop_points = new THREE.Points(_geom_lowres, this.shdr_pop_points);
+  this._pop_wire = new THREE.Line(_geom_lowres, this.shdr_pop_wire);
 
-  var _pop_points_out = new THREE.Points(_geom_lowres, this.shdr_pop_points_out);
-  var _pop_wire_out = new THREE.Line(_geom_lowres, this.shdr_pop_wire_out);
+  this._pop_points_out = new THREE.Points(_geom_lowres, this.shdr_pop_points_out);
+  this._pop_wire_out = new THREE.Line(_geom_lowres, this.shdr_pop_wire_out);
   this.scene.add(this._mesh);
-  this.scene.add(_points);
-  // this.scene.add(_wire);
+  this.scene.add(this._points);
+  // this.scene.add(this._wire);
 
-  this.scene.add(_pop_points);
-  this.scene.add(_pop_wire);
-  this.scene.add(_pop_points_out);
-  // this.scene.add(_pop_wire_out);
+  this.scene.add(this._pop_points);
+  this.scene.add(this._pop_wire);
+  this.scene.add(this._pop_points_out);
+  // this.scene.add(this._pop_wire_out);
 
-  // this.shadow_scene.add(_shadow_mesh);
+  // this.shadow_scene.add(this._shadow_mesh);
 
   var _geom_cube = new THREE.BoxBufferGeometry(100, 100, 100);
-  var _mesh_cube = new THREE.Mesh(_geom_cube, this.shdr_cubemap);
+  this._mesh_cube = new THREE.Mesh(_geom_cube, this.shdr_cubemap);
 
-  this.scene.add(_mesh_cube);
+  this.scene.add(this._mesh_cube);
 };
 
 NoiseBlob.prototype.set_retina = function(){
@@ -374,6 +374,63 @@ NoiseBlob.prototype.set_PBR = function(_pbr){
   this.shdr_mesh.defines.IS_PBR = 'true';
 };
 
+NoiseBlob.prototype.set_position = function(x, y) {
+  this._mesh.position.x += x
+  this._mesh.position.y += y
+
+  this._points.position.x += x
+  this._points.position.y += y
+
+  this._wire.position.x += x
+  this._wire.position.y += y
+
+  this._pop_points.position.x += x
+  this._pop_points.position.y += y
+
+  this._pop_wire.position.x += x
+  this._pop_wire.position.y += y
+
+  this._pop_points_out.position.x += x
+  this._pop_points_out.position.y += y
+
+  this._pop_wire_out.position.x += x
+  this._pop_wire_out.position.y += y
+
+  this._mesh_cube.position.x += x
+  this._mesh_cube.position.y += y
+
+  // this._shadow_mesh.position.x += x
+  // this._shadow_mesh.position.y += y
+}
+
+NoiseBlob.prototype.update_position = function(x, y) {
+  this._mesh.position.x += x
+  this._mesh.position.y += y
+
+  this._points.position.x += x
+  this._points.position.y += y
+
+  this._wire.position.x += x
+  this._wire.position.y += y
+
+  this._pop_points.position.x += x
+  this._pop_points.position.y += y
+
+  this._pop_wire.position.x += x
+  this._pop_wire.position.y += y
+
+  this._pop_points_out.position.x += x
+  this._pop_points_out.position.y += y
+
+  this._pop_wire_out.position.x += x
+  this._pop_wire_out.position.y += y
+
+  this._mesh_cube.position.x += x
+  this._mesh_cube.position.y += y
+
+  // this._shadow_mesh.position.x += x
+  // this._shadow_mesh.position.y += y
+}
 
 NoiseBlob.prototype.update_PBR = function(){
   this.shdr_mesh.uniforms.u_normal.value = this.pbr.get_normal();

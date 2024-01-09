@@ -2,6 +2,8 @@ var m_analyzer;
 var m_renderer;
 // var m_mouse;
 var m_render_queue;
+var blob_left_renderer;
+var blob_right_renderer;
 var m_blob;
 var m_pbr;
 var m_light;
@@ -25,7 +27,6 @@ function zColor(data) {
 }
 
 function onResultsPose(results) {
-  // console.log(results);
   poseLandmarks.head = results.poseLandmarks[0];
   poseLandmarks.left_hand = results.poseLandmarks[15];
   poseLandmarks.right_hand = results.poseLandmarks[16];
@@ -108,6 +109,7 @@ var init = function () {
   var _is_perspective = true;
   m_renderer = new ThreeSharedRenderer(_is_perspective);
   m_renderer.append_renderer_to_dom(document.body);
+
   m_renderer.renderer.autoClear = true;
 
   // init pbr
@@ -116,15 +118,27 @@ var init = function () {
   m_light = new ThreePointLight();
 
   // init blob
-  m_blob = new NoiseBlob(m_renderer, m_analyzer, m_light);
-  m_blob.set_PBR(m_pbr);
-  if (_is_retina) m_blob.set_retina();
+  m_blob_left = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_left.set_PBR(m_pbr);
+  m_blob_left.set_position(-1, 0);
+
+  if (_is_retina) m_blob_left.set_retina();
+
+  // init blob
+  m_blob_right = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_right.set_PBR(m_pbr);
+  m_blob_right.set_position(1, 0);
+  
+  if (_is_retina) m_blob_right.set_retina();
+
+  blob_left_renderer = [m_blob_left.update.bind(m_blob_left)];
+  blob_right_renderer = [m_blob_right.update.bind(m_blob_right)];
 
   // setup render queue
-  m_render_queue = [m_blob.update.bind(m_blob)];
+  m_render_queue = [m_blob_left.update.bind(m_blob_left)] //, m_blob_right.update.bind(m_blob_right)];
 
   // init gui
-  m_ctrl = new Ctrl(m_blob, m_light, m_pbr, m_analyzer);
+  m_ctrl = new Ctrl([m_blob_left, m_blob_right], m_light, m_pbr, m_analyzer);
 };
 
 var update = function () {
@@ -134,8 +148,18 @@ var update = function () {
   m_analyzer.update();
   // m_analyzer.debug(document.getElementsByTagName("canvas")[0]);
 
+  m_renderer.renderer.autoClear = true;
+
   // update blob
-  m_blob.update_PBR();
+  m_blob_left.update_PBR();
+  // m_blob_left.update_position(poseLandmarks.left_hand);
+  m_renderer.render(blob_left_renderer);
+
+  m_renderer.renderer.autoClear = false;
+
+  m_blob_right.update_PBR();
+  // m_blob_right.update_position(poseLandmarks.right_hand);
+  m_renderer.render(blob_right_renderer);
 
   // update pbr
   m_pbr.exposure = 5 + 30 * m_analyzer.get_level();
@@ -146,7 +170,7 @@ var update = function () {
   // update renderer
   // if(m_ctrl.params.cam_ziggle)
   //     m_renderer.ziggle_cam(m_analyzer.get_history());
-  m_renderer.render(m_render_queue);
+  
 };
 
 document.addEventListener("DOMContentLoaded", function () {
