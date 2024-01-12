@@ -188,11 +188,14 @@ var init = function () {
   // init light
   m_light = new ThreePointLight();
 
+  x = 0.5;
+  y = 0.5;
+  scale = 0.3;
 
   // init blob left hand
   m_blob_lh = new NoiseBlob(m_renderer, m_analyzer, m_light);
   m_blob_lh.set_PBR(m_pbr);
-  m_blob_lh.set_position(-1, 0.5, 0, 0.5);
+  m_blob_lh.set_position(-1 + x, 0.5 + y, 0, scale);
 
   if (_is_retina) m_blob_lh.set_retina();
   blob_lh_renderer = [m_blob_lh.update.bind(m_blob_lh)];
@@ -201,7 +204,7 @@ var init = function () {
   // init blob right hand
   m_blob_rh = new NoiseBlob(m_renderer, m_analyzer, m_light);
   m_blob_rh.set_PBR(m_pbr);
-  m_blob_rh.set_position(1, 0.5, 0, 0.5);
+  m_blob_rh.set_position(1 + x, 0.5 + y, 0, scale);
   
   if (_is_retina) m_blob_rh.set_retina();
   blob_rh_renderer = [m_blob_rh.update.bind(m_blob_rh)];
@@ -210,7 +213,7 @@ var init = function () {
   // init blob left foot
   m_blob_lf = new NoiseBlob(m_renderer, m_analyzer, m_light);
   m_blob_lf.set_PBR(m_pbr);
-  m_blob_lf.set_position(-0.5, -0.5, 0, 0.5);
+  m_blob_lf.set_position(-0.5 + x, -0.5 + y, 0, scale);
 
   if (_is_retina) m_blob_lf.set_retina();
   blob_lf_renderer = [m_blob_lf.update.bind(m_blob_lf)];
@@ -219,7 +222,7 @@ var init = function () {
   // init blob right foot
   m_blob_rf = new NoiseBlob(m_renderer, m_analyzer, m_light);
   m_blob_rf.set_PBR(m_pbr);
-  m_blob_rf.set_position(0.5, -0.5, 0, 0.5);
+  m_blob_rf.set_position(0.5 + x, -0.5 + y, 0, scale);
 
   if (_is_retina) m_blob_rf.set_retina();
   blob_rf_renderer = [m_blob_rf.update.bind(m_blob_rf)];
@@ -228,18 +231,18 @@ var init = function () {
   // init blob head
   m_blob_head = new NoiseBlob(m_renderer, m_analyzer, m_light);
   m_blob_head.set_PBR(m_pbr);
-  m_blob_head.set_position(0, 1.5, 0, 0.5);
+  m_blob_head.set_position(0 + x, 1.5 + y, 0, scale);
 
   if (_is_retina) m_blob_head.set_retina();
   blob_head_renderer = [m_blob_head.update.bind(m_blob_head)];
 
   // init blob
-  // m_blob = new NoiseBlob(m_renderer, m_analyzer, m_light);
-  // m_blob.set_PBR(m_pbr);
-  // m_blob.set_position(0, 0.5, 0, 0.75);
+  m_blob = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob.set_PBR(m_pbr);
+  m_blob.set_position(0 + x, 0.5 + y, 0, scale * 1.5);
 
-  // if (_is_retina) m_blob.set_retina();
-  // blob_renderer = [m_blob.update.bind(m_blob)];
+  if (_is_retina) m_blob.set_retina();
+  blob_renderer = [m_blob.update.bind(m_blob)];
 
 
   // init gui
@@ -254,39 +257,40 @@ var update = function () {
   // m_analyzer.debug(document.getElementsByTagName("canvas")[0]);
 
   m_renderer.renderer.autoClear = true;
+
+  movement = 1;
   
   m_blob_lh.update_PBR();
   if (poseLandmarks.left_hand && poseLandmarks.left_hand.visibility > 0.7)
-    m_blob_lh.update_position(-poseLandmarks.left_hand.x*2, -poseLandmarks.left_hand.y*2);
+    m_blob_lh.update_position(-poseLandmarks.left_hand.x*movement, -poseLandmarks.left_hand.y*movement);
   m_renderer.render(blob_lh_renderer);
 
   m_renderer.renderer.autoClear = false;
 
   m_blob_rh.update_PBR();
   if (poseLandmarks.right_hand && poseLandmarks.left_hand.visibility > 0.7)
-    m_blob_rh.update_position(-poseLandmarks.right_hand.x*2, -poseLandmarks.right_hand.y*2);
+    m_blob_rh.update_position(-poseLandmarks.right_hand.x*movement, -poseLandmarks.right_hand.y*movement);
   m_renderer.render(blob_rh_renderer);
-
 
   m_blob_lf.update_PBR();
   if (poseLandmarks.left_foot && poseLandmarks.left_foot.visibility > 0.7)
-    m_blob_lf.update_position(-poseLandmarks.left_foot.x*2, -poseLandmarks.left_foot.y*2);
+    m_blob_lf.update_position(-poseLandmarks.left_foot.x*movement, -poseLandmarks.left_foot.y*movement);
   m_renderer.render(blob_lf_renderer);
 
   m_blob_rf.update_PBR();
   if (poseLandmarks.right_foot && poseLandmarks.right_foot.visibility > 0.7)
-    m_blob_rf.update_position(-poseLandmarks.right_foot.x*2, -poseLandmarks.right_foot.y*2);
+    m_blob_rf.update_position(-poseLandmarks.right_foot.x*movement, -poseLandmarks.right_foot.y*movement);
   m_renderer.render(blob_rf_renderer);
 
   m_blob_head.update_PBR();
   if (poseLandmarks.head && poseLandmarks.head.visibility > 0.7)
-    m_blob_head.update_position(-poseLandmarks.head.x*2, -poseLandmarks.head.y*2);
+    m_blob_head.update_position(-poseLandmarks.head.x*movement, -poseLandmarks.head.y*movement);
   m_renderer.render(blob_head_renderer);
 
-  // m_blob.update_PBR();
-  // if (poseLandmarks.body && poseLandmarks.body.visibility > 0.7)
-  //   m_blob.update_position(-poseLandmarks.body.x*2, -poseLandmarks.body.y*2);
-  // m_renderer.render(blob_renderer);
+  m_blob.update_PBR();
+  if (poseLandmarks.body && poseLandmarks.body.visibility > 0.7)
+    m_blob.update_position(-poseLandmarks.body.x*movement, -poseLandmarks.body.y*movement);
+  m_renderer.render(blob_renderer);
 
 
   // update pbr

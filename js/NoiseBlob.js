@@ -73,6 +73,28 @@ NoiseBlob.prototype.update_shadow_map = function(){
   this.shdr_mesh.uniforms.u_light_pos.value = _light_pos;
   this.shdr_mesh.uniforms.u_shadow_matrix.value = _shadow_matrix;
   this.shdr_mesh.uniforms.u_shadow_map.value = this.light.get_shadow_map();
+  // Add noise to the blob "breathing"
+  var noiseScale = 0.1; // Adjust the scale of the noise
+  var time = this.renderer.get_timer();
+
+  // Example of adding noise to the audio high uniform
+  this.shdr_mesh.uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + noise.noise2D(time, 3) * noiseScale);
+
+  // Example of adding noise to the audio mid uniform
+  this.shdr_mesh.uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + noise.noise2D(time, 3) * noiseScale);
+
+  // Example of adding noise to the audio bass uniform
+  this.shdr_mesh.uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + noise.noise2D(time, 3) * noiseScale);
+
+  // Example of adding noise to the audio level uniform
+  this.shdr_mesh.uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + noise.noise2D(time, 3) * noiseScale);
+
+  // Example of adding noise to the audio history uniform
+  this.shdr_mesh.uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + noise.noise2D(time, 3) * noiseScale);
+
+  // Example of adding noise to the audio history uniform
+  
+  
 };
 
 NoiseBlob.prototype.init_shader = function(){
@@ -345,8 +367,8 @@ NoiseBlob.prototype.toggle_cubemap = function(){
 };
 
 NoiseBlob.prototype.update_cubemap = function(){
-  // var _cross_fader = (Math.sin(this.audio_analyzer.get_history()) + 1.) / 2.;
-  var _cross_fader = 0.;
+  var _cross_fader = (Math.sin(this.audio_analyzer.get_history()) + 1.) / 2.;
+  // var _cross_fader = 0.;
   // var _cross_fader = 1.-this.audio_analyzer.get_level();
   this.shdr_mesh.uniforms.cross_fader = {value:_cross_fader};
   this.shdr_cubemap.uniforms.cross_fader = {value:_cross_fader};
