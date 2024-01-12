@@ -1,9 +1,13 @@
 var m_analyzer;
 var m_renderer;
 // var m_mouse;
-var m_render_queue;
-var blob_left_renderer;
-var blob_right_renderer;
+var blob_lh_renderer;
+var blob_rh_renderer;
+var blob_lf_renderer;
+var blob_rf_renderer;
+var blob_head_renderer;
+var blob_renderer;
+var m_render_queue = [];
 var m_blob;
 var m_pbr;
 var m_light;
@@ -15,6 +19,7 @@ var poseLandmarks = {
   head: undefined,
   left_foot: undefined,
   right_foot: undefined,
+  body: undefined,
 };
 
 const video = document.getElementsByClassName("input_video")[0];
@@ -25,13 +30,79 @@ function zColor(data) {
   const z = clamp(data.from.z + 0.5, 0, 1);
   return `rgba(0, ${255 * z}, ${255 * (1 - z)}, 1)`;
 }
+function calculateAveragePoint(points) {
+  if (points.length === 0) {
+      return null; // Return null if the array is empty
+  }
+  let totalPoints = points.length;
+  
+  let totalX = 0, totalY = 0, totalZ = 0; totalVisibility = 0;
 
+  points = points.filter(point => point); // Remove any null elements
+
+  // Sum up the x, y, and z coordinates
+  points.forEach(point => {
+      totalX += point.x;
+      totalY += point.y;
+      totalZ += point.z;
+      totalVisibility += point.visibility;
+  });
+
+  // Calculate the average for each coordinate
+  let averageX = totalX / points.length;
+  let averageY = totalY / points.length;
+  let averageZ = totalZ / points.length;
+  let averageVisibility = totalVisibility / totalPoints;
+
+  // Return the average point
+  return { x: averageX, y: averageY, z: averageZ, visibility: averageVisibility };
+}
 function onResultsPose(results) {
-  poseLandmarks.head = results.poseLandmarks[0];
-  poseLandmarks.left_hand = results.poseLandmarks[15];
-  poseLandmarks.right_hand = results.poseLandmarks[16];
-  poseLandmarks.left_foot = results.poseLandmarks[27];
-  poseLandmarks.right_foot = results.poseLandmarks[28];
+  poseLandmarks.head = calculateAveragePoint([
+    results.poseLandmarks[0],
+    results.poseLandmarks[1],
+    results.poseLandmarks[2],
+    results.poseLandmarks[3],
+    results.poseLandmarks[4],
+    results.poseLandmarks[5],
+    results.poseLandmarks[6],
+    results.poseLandmarks[7],
+    results.poseLandmarks[8],
+    results.poseLandmarks[9],
+    results.poseLandmarks[10]
+  ]);
+  poseLandmarks.left_hand = calculateAveragePoint([
+    results.poseLandmarks[15],
+    results.poseLandmarks[17],
+    results.poseLandmarks[19],
+    results.poseLandmarks[21]
+  ]);
+  poseLandmarks.right_hand = calculateAveragePoint([
+    results.poseLandmarks[16],
+    results.poseLandmarks[18],
+    results.poseLandmarks[20],
+    results.poseLandmarks[22]
+  ]);
+  poseLandmarks.left_foot = calculateAveragePoint([
+    results.poseLandmarks[27],
+    results.poseLandmarks[29],
+    results.poseLandmarks[31]
+  ]);
+  poseLandmarks.right_foot = calculateAveragePoint([
+    results.poseLandmarks[28],
+    results.poseLandmarks[30],
+    results.poseLandmarks[32]
+  ]);
+  poseLandmarks.body = calculateAveragePoint([
+    results.poseLandmarks[11],
+    results.poseLandmarks[12],
+    results.poseLandmarks[13],
+    results.poseLandmarks[14],
+    results.poseLandmarks[23],
+    results.poseLandmarks[24],
+    results.poseLandmarks[25],
+    results.poseLandmarks[26]
+  ]);
 
   document.body.classList.add("loaded");
   canvasCtx5.save();
@@ -117,28 +188,62 @@ var init = function () {
   // init light
   m_light = new ThreePointLight();
 
-  // init blob
-  m_blob_left = new NoiseBlob(m_renderer, m_analyzer, m_light);
-  m_blob_left.set_PBR(m_pbr);
-  m_blob_left.set_position(-2, 0);
 
-  if (_is_retina) m_blob_left.set_retina();
+  // init blob left hand
+  m_blob_lh = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_lh.set_PBR(m_pbr);
+  m_blob_lh.set_position(-1, 0.5, 0, 0.5);
 
-  // init blob
-  m_blob_right = new NoiseBlob(m_renderer, m_analyzer, m_light);
-  m_blob_right.set_PBR(m_pbr);
-  m_blob_right.set_position(2, 0);
+  if (_is_retina) m_blob_lh.set_retina();
+  blob_lh_renderer = [m_blob_lh.update.bind(m_blob_lh)];
+
+
+  // init blob right hand
+  m_blob_rh = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_rh.set_PBR(m_pbr);
+  m_blob_rh.set_position(1, 0.5, 0, 0.5);
   
-  if (_is_retina) m_blob_right.set_retina();
+  if (_is_retina) m_blob_rh.set_retina();
+  blob_rh_renderer = [m_blob_rh.update.bind(m_blob_rh)];
 
-  blob_left_renderer = [m_blob_left.update.bind(m_blob_left)];
-  blob_right_renderer = [m_blob_right.update.bind(m_blob_right)];
 
-  // setup render queue
-  m_render_queue = [m_blob_left.update.bind(m_blob_left)] //, m_blob_right.update.bind(m_blob_right)];
+  // init blob left foot
+  m_blob_lf = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_lf.set_PBR(m_pbr);
+  m_blob_lf.set_position(-0.5, -0.5, 0, 0.5);
+
+  if (_is_retina) m_blob_lf.set_retina();
+  blob_lf_renderer = [m_blob_lf.update.bind(m_blob_lf)];
+
+
+  // init blob right foot
+  m_blob_rf = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_rf.set_PBR(m_pbr);
+  m_blob_rf.set_position(0.5, -0.5, 0, 0.5);
+
+  if (_is_retina) m_blob_rf.set_retina();
+  blob_rf_renderer = [m_blob_rf.update.bind(m_blob_rf)];
+
+
+  // init blob head
+  m_blob_head = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_head.set_PBR(m_pbr);
+  m_blob_head.set_position(0, 1.5, 0, 0.5);
+
+  if (_is_retina) m_blob_head.set_retina();
+  blob_head_renderer = [m_blob_head.update.bind(m_blob_head)];
+
+  // init blob
+  // m_blob = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  // m_blob.set_PBR(m_pbr);
+  // m_blob.set_position(0, 0.5, 0, 0.75);
+
+  // if (_is_retina) m_blob.set_retina();
+  // blob_renderer = [m_blob.update.bind(m_blob)];
+
 
   // init gui
-  m_ctrl = new Ctrl([m_blob_left, m_blob_right], m_light, m_pbr, m_analyzer);
+  m_ctrl = new Ctrl([m_blob_lh, m_blob_rh], m_light, m_pbr, m_analyzer);
 };
 
 var update = function () {
@@ -149,19 +254,40 @@ var update = function () {
   // m_analyzer.debug(document.getElementsByTagName("canvas")[0]);
 
   m_renderer.renderer.autoClear = true;
-
-  // update blob
-  m_blob_left.update_PBR();
-  if (poseLandmarks.left_hand.visibility > 0.7)
-    m_blob_left.update_position(-poseLandmarks.left_hand.x*2, -poseLandmarks.left_hand.y*2);
-  m_renderer.render(blob_left_renderer);
+  
+  m_blob_lh.update_PBR();
+  if (poseLandmarks.left_hand && poseLandmarks.left_hand.visibility > 0.7)
+    m_blob_lh.update_position(-poseLandmarks.left_hand.x*2, -poseLandmarks.left_hand.y*2);
+  m_renderer.render(blob_lh_renderer);
 
   m_renderer.renderer.autoClear = false;
 
-  m_blob_right.update_PBR();
-  if (poseLandmarks.left_hand.visibility > 0.7)
-    m_blob_right.update_position(-poseLandmarks.right_hand.x*2, -poseLandmarks.right_hand.y*2);
-  m_renderer.render(blob_right_renderer);
+  m_blob_rh.update_PBR();
+  if (poseLandmarks.right_hand && poseLandmarks.left_hand.visibility > 0.7)
+    m_blob_rh.update_position(-poseLandmarks.right_hand.x*2, -poseLandmarks.right_hand.y*2);
+  m_renderer.render(blob_rh_renderer);
+
+
+  m_blob_lf.update_PBR();
+  if (poseLandmarks.left_foot && poseLandmarks.left_foot.visibility > 0.7)
+    m_blob_lf.update_position(-poseLandmarks.left_foot.x*2, -poseLandmarks.left_foot.y*2);
+  m_renderer.render(blob_lf_renderer);
+
+  m_blob_rf.update_PBR();
+  if (poseLandmarks.right_foot && poseLandmarks.right_foot.visibility > 0.7)
+    m_blob_rf.update_position(-poseLandmarks.right_foot.x*2, -poseLandmarks.right_foot.y*2);
+  m_renderer.render(blob_rf_renderer);
+
+  m_blob_head.update_PBR();
+  if (poseLandmarks.head && poseLandmarks.head.visibility > 0.7)
+    m_blob_head.update_position(-poseLandmarks.head.x*2, -poseLandmarks.head.y*2);
+  m_renderer.render(blob_head_renderer);
+
+  // m_blob.update_PBR();
+  // if (poseLandmarks.body && poseLandmarks.body.visibility > 0.7)
+  //   m_blob.update_position(-poseLandmarks.body.x*2, -poseLandmarks.body.y*2);
+  // m_renderer.render(blob_renderer);
+
 
   // update pbr
   m_pbr.exposure = 5 + 30 * m_analyzer.get_level();

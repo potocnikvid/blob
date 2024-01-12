@@ -374,71 +374,102 @@ NoiseBlob.prototype.set_PBR = function(_pbr){
   this.shdr_mesh.defines.IS_PBR = 'true';
 };
 
-NoiseBlob.prototype.set_position = function(x, y) {
+NoiseBlob.prototype.set_position = function(x, y, z, scale) {
+  this._mesh.scale.set(scale, scale, scale);
+  this._points.scale.set(scale, scale, scale);
+  this._pop_points.scale.set(scale, scale, scale);
+  this._pop_wire.scale.set(scale, scale, scale);
+  this._pop_points_out.scale.set(scale, scale, scale);
+  this._pop_wire_out.scale.set(scale, scale, scale);
+  this._wire.scale.set(scale, scale, scale);
+  this._mesh_cube.scale.set(scale, scale, scale);
+  // this._shadow_mesh.scale.set(scale, scale, scale);
+
   this._mesh.position.x += x
   this._mesh.position.y += y
+  this._mesh.position.z += z
   this._mesh_initial_pos = this._mesh.position.clone();
 
   this._points.position.x += x
   this._points.position.y += y
+  this._points.position.z += z
   this._points_initial_pos = this._points.position.clone();
 
   this._wire.position.x += x
   this._wire.position.y += y
+  this._wire.position.z += z
   this._wire_initial_pos = this._wire.position.clone();
 
   this._pop_points.position.x += x
   this._pop_points.position.y += y
+  this._pop_points.position.z += z
   this._pop_points_initial_pos = this._pop_points.position.clone();
 
   this._pop_wire.position.x += x
   this._pop_wire.position.y += y
+  this._pop_wire.position.z += z
   this._pop_wire_initial_pos = this._pop_wire.position.clone();
 
   this._pop_points_out.position.x += x
   this._pop_points_out.position.y += y
+  this._pop_points_out.position.z += z
   this._pop_points_out_initial_pos = this._pop_points_out.position.clone();
 
   this._pop_wire_out.position.x += x
   this._pop_wire_out.position.y += y
+  this._pop_wire_out.position.z += z
   this._pop_wire_out_initial_pos = this._pop_wire_out.position.clone();
 
   this._mesh_cube.position.x += x
   this._mesh_cube.position.y += y
+  this._mesh_cube.position.z += z
   this._mesh_cube_initial_pos = this._mesh_cube.position.clone();
 
   // this._shadow_mesh.position.x += x
   // this._shadow_mesh.position.y += y
+  // this._shadow_mesh.position.y += y
+  // this._shadow_mesh_initial_pos = this._shadow_mesh.position.clone();
+
+
 }
 
-NoiseBlob.prototype.update_position = function(x, y) {
+NoiseBlob.prototype.update_position = function(x, y, z) {
   this._mesh.position.x = this._mesh_initial_pos.x + x
   this._mesh.position.y = this._mesh_initial_pos.y + y
+  // this._mesh.position.z = this._mesh_initial_pos.z + y
 
   this._points.position.x = this._points_initial_pos.x + x
   this._points.position.y = this._points_initial_pos.y + y
+  // this._points.position.z = this._points_initial_pos.z + z
 
   this._wire.position.x = this._wire_initial_pos.x + x
   this._wire.position.y = this._wire_initial_pos.y + y
+  // this._wire.position.z = this._wire_initial_pos.z + z
 
   this._pop_points.position.x = this._pop_points_initial_pos.x + x
   this._pop_points.position.y = this._pop_points_initial_pos.y + y
+  // this._pop_points.position.z = this._pop_points_initial_pos.z + z
 
   this._pop_wire.position.x = this._pop_wire_initial_pos.x + x
   this._pop_wire.position.y = this._pop_wire_initial_pos.y + y
+  // this._pop_wire.position.z = this._pop_wire_initial_pos.z + z
 
   this._pop_points_out.position.x = this._pop_points_out_initial_pos.x + x
   this._pop_points_out.position.y = this._pop_points_out_initial_pos.y + y
+  // this._pop_points_out.position.z = this._pop_points_out_initial_pos.z + z
 
   this._pop_wire_out.position.x = this._pop_wire_out_initial_pos.x + x
   this._pop_wire_out.position.y = this._pop_wire_out_initial_pos.y + y
+  // this._pop_wire_out.position.z = this._pop_wire_out_initial_pos.z + z
 
   this._mesh_cube.position.x = this._mesh_cube_initial_pos.x + x
   this._mesh_cube.position.y = this._mesh_cube_initial_pos.y + y
+  // this._mesh_cube.position.z = this._mesh_cube_initial_pos.z + z
 
-  
-  // this._shadow_mesh.position.x += x
-  // this._shadow_mesh.position.y += y
+  // this._shadow_mesh.position.x = this._shadow_mesh_initial_pos.x + x
+  // this._shadow_mesh.position.y = this._shadow_mesh_initial_pos.y + y
+  // this._shadow_mesh.position.z = this._shadow_mesh_initial_pos.z + z
+
 }
 
 NoiseBlob.prototype.update_PBR = function(){
