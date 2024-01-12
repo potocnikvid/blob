@@ -1,3 +1,5 @@
+https://github.com/potocnikvid/blob
+
 Link do projekta:
 https://blob-pi-ashy.vercel.app/
 
