@@ -194,61 +194,61 @@ var init = function () {
   y = 0.5;
   scale = 0.3;
 
-  // // init blob left hand
-  // m_blob_lh = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
-  // m_blob_lh.set_PBR(m_pbr);
-  // m_blob_lh.set_position(-1 + x, 0.5 + y, 0, scale);
+  // init blob left hand
+  m_blob_lh = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
+  m_blob_lh.set_PBR(m_pbr);
+  m_blob_lh.set_position(-1 + x, 0.5 + y, 0, scale);
 
-  // if (_is_retina) m_blob_lh.set_retina();
-  // blob_lh_renderer = [m_blob_lh.update.bind(m_blob_lh)];
+  if (_is_retina) m_blob_lh.set_retina();
+  blob_lh_renderer = [m_blob_lh.update.bind(m_blob_lh)];
 
 
-  // // init blob right hand
-  // m_blob_rh = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
-  // m_blob_rh.set_PBR(m_pbr);
-  // m_blob_rh.set_position(1 + x, 0.5 + y, 0, scale);
+  // init blob right hand
+  m_blob_rh = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
+  m_blob_rh.set_PBR(m_pbr);
+  m_blob_rh.set_position(1 + x, 0.5 + y, 0, scale);
   
-  // if (_is_retina) m_blob_rh.set_retina();
-  // blob_rh_renderer = [m_blob_rh.update.bind(m_blob_rh)];
+  if (_is_retina) m_blob_rh.set_retina();
+  blob_rh_renderer = [m_blob_rh.update.bind(m_blob_rh)];
 
 
-  // // init blob left foot
-  // m_blob_lf = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
-  // m_blob_lf.set_PBR(m_pbr);
-  // m_blob_lf.set_position(-0.5 + x, -0.5 + y, 0, scale);
+  // init blob left foot
+  m_blob_lf = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
+  m_blob_lf.set_PBR(m_pbr);
+  m_blob_lf.set_position(-0.5 + x, -0.5 + y, 0, scale);
 
-  // if (_is_retina) m_blob_lf.set_retina();
-  // blob_lf_renderer = [m_blob_lf.update.bind(m_blob_lf)];
-
-
-  // // init blob right foot
-  // m_blob_rf = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
-  // m_blob_rf.set_PBR(m_pbr);
-  // m_blob_rf.set_position(0.5 + x, -0.5 + y, 0, scale);
-
-  // if (_is_retina) m_blob_rf.set_retina();
-  // blob_rf_renderer = [m_blob_rf.update.bind(m_blob_rf)];
+  if (_is_retina) m_blob_lf.set_retina();
+  blob_lf_renderer = [m_blob_lf.update.bind(m_blob_lf)];
 
 
-  // // init blob head
-  // m_blob_head = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
-  // m_blob_head.set_PBR(m_pbr);
-  // m_blob_head.set_position(0 + x, 1.5 + y, 0, scale);
+  // init blob right foot
+  m_blob_rf = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
+  m_blob_rf.set_PBR(m_pbr);
+  m_blob_rf.set_position(0.5 + x, -0.5 + y, 0, scale);
 
-  // if (_is_retina) m_blob_head.set_retina();
-  // blob_head_renderer = [m_blob_head.update.bind(m_blob_head)];
+  if (_is_retina) m_blob_rf.set_retina();
+  blob_rf_renderer = [m_blob_rf.update.bind(m_blob_rf)];
+
+
+  // init blob head
+  m_blob_head = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
+  m_blob_head.set_PBR(m_pbr);
+  m_blob_head.set_position(0 + x, 1.5 + y, 0, scale);
+
+  if (_is_retina) m_blob_head.set_retina();
+  blob_head_renderer = [m_blob_head.update.bind(m_blob_head)];
 
   // init blob
   m_blob = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
   m_blob.set_PBR(m_pbr);
-  m_blob.set_position(0 + x, 0.5 + y, 0, scale * 2);
+  m_blob.set_position(0 + x, 0.5 + y, 0, scale * 1.5);
 
   if (_is_retina) m_blob.set_retina();
   blob_renderer = [m_blob.update.bind(m_blob)];
 
 
   // init gui
-  m_ctrl = new Ctrl([m_blob, m_blob], m_light, m_pbr, m_analyzer);
+  m_ctrl = new Ctrl([m_blob_lh, m_blob_rh], m_light, m_pbr, m_analyzer);
 };
 
 var update = function () {
@@ -262,32 +262,32 @@ var update = function () {
 
   movement = 1;
   
-  // m_blob_lh.update_PBR();
-  // if (poseLandmarks.left_hand && poseLandmarks.left_hand.visibility > 0.7)
-  //   m_blob_lh.update_position(-poseLandmarks.left_hand.x*movement, -poseLandmarks.left_hand.y*movement);
-  // m_renderer.render(blob_lh_renderer);
+  m_blob_lh.update_PBR();
+  if (poseLandmarks.left_hand && poseLandmarks.left_hand.visibility > 0.7)
+    m_blob_lh.update_position(-poseLandmarks.left_hand.x*movement, -poseLandmarks.left_hand.y*movement);
+  m_renderer.render(blob_lh_renderer);
 
-  // m_renderer.renderer.autoClear = false;
+  m_renderer.renderer.autoClear = false;
 
-  // m_blob_rh.update_PBR();
-  // if (poseLandmarks.right_hand && poseLandmarks.left_hand.visibility > 0.7)
-  //   m_blob_rh.update_position(-poseLandmarks.right_hand.x*movement, -poseLandmarks.right_hand.y*movement);
-  // m_renderer.render(blob_rh_renderer);
+  m_blob_rh.update_PBR();
+  if (poseLandmarks.right_hand && poseLandmarks.left_hand.visibility > 0.7)
+    m_blob_rh.update_position(-poseLandmarks.right_hand.x*movement, -poseLandmarks.right_hand.y*movement);
+  m_renderer.render(blob_rh_renderer);
 
-  // m_blob_lf.update_PBR();
-  // if (poseLandmarks.left_foot && poseLandmarks.left_foot.visibility > 0.7)
-  //   m_blob_lf.update_position(-poseLandmarks.left_foot.x*movement, -poseLandmarks.left_foot.y*movement);
-  // m_renderer.render(blob_lf_renderer);
+  m_blob_lf.update_PBR();
+  if (poseLandmarks.left_foot && poseLandmarks.left_foot.visibility > 0.7)
+    m_blob_lf.update_position(-poseLandmarks.left_foot.x*movement, -poseLandmarks.left_foot.y*movement);
+  m_renderer.render(blob_lf_renderer);
 
-  // m_blob_rf.update_PBR();
-  // if (poseLandmarks.right_foot && poseLandmarks.right_foot.visibility > 0.7)
-  //   m_blob_rf.update_position(-poseLandmarks.right_foot.x*movement, -poseLandmarks.right_foot.y*movement);
-  // m_renderer.render(blob_rf_renderer);
+  m_blob_rf.update_PBR();
+  if (poseLandmarks.right_foot && poseLandmarks.right_foot.visibility > 0.7)
+    m_blob_rf.update_position(-poseLandmarks.right_foot.x*movement, -poseLandmarks.right_foot.y*movement);
+  m_renderer.render(blob_rf_renderer);
 
-  // m_blob_head.update_PBR();
-  // if (poseLandmarks.head && poseLandmarks.head.visibility > 0.7)
-  //   m_blob_head.update_position(-poseLandmarks.head.x*movement, -poseLandmarks.head.y*movement);
-  // m_renderer.render(blob_head_renderer);
+  m_blob_head.update_PBR();
+  if (poseLandmarks.head && poseLandmarks.head.visibility > 0.7)
+    m_blob_head.update_position(-poseLandmarks.head.x*movement, -poseLandmarks.head.y*movement);
+  m_renderer.render(blob_head_renderer);
 
   m_blob.update_PBR();
   if (poseLandmarks.body && poseLandmarks.body.visibility > 0.7)

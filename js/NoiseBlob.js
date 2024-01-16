@@ -29,7 +29,7 @@ NoiseBlob.prototype.update = function(){
       this.shdr_shadow
   ];
   var _shdrs_size = _shdrs.length;
-  var noiseScale = 0.01; // Adjust the scale of the noise
+  var noiseScale = 0.05; // Adjust the scale of the noise
   var time = this.renderer.get_timer();
 
   // for(var i = 0; i < _shdrs_size; i++){
@@ -57,7 +57,7 @@ NoiseBlob.prototype.update = function(){
   _shdrs[1].uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + this.noise.simplex2(3, 3) * noiseScale);
   _shdrs[1].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + this.noise.simplex2(3, 3) * noiseScale);
   _shdrs[1].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + this.noise.simplex2(3, 3) * noiseScale);
-  _shdrs[1].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale)*2;
+  _shdrs[1].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale);
   _shdrs[1].uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + this.noise.simplex2(3, 3) * noiseScale);
 
   _shdrs[2].uniforms.u_is_init.value = this.is_init;
@@ -97,7 +97,7 @@ NoiseBlob.prototype.update = function(){
   _shdrs[6].uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + this.noise.simplex2(3, 3) * noiseScale) / 5;
   _shdrs[6].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + this.noise.simplex2(3, 3) * noiseScale) / 4;
   _shdrs[6].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + this.noise.simplex2(3, 3) * noiseScale) * 10;
-  _shdrs[6].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale) *10;
+  _shdrs[6].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale);
   _shdrs[6].uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + this.noise.simplex2(3, 3) * noiseScale);
 
   _shdrs[7].uniforms.u_is_init.value = this.is_init;
@@ -346,12 +346,12 @@ NoiseBlob.prototype.init_scene = function(){
 
   // Add starMesh to your scene
   // this.scene.add(starMesh);
-  this._geom = this.starGeometry;
+  // this._geom = this.starGeometry;
 
 
   var _sphere_size = .5;
   var _wire_size = _sphere_size * 0.3;
-  // this._geom = new THREE.SphereBufferGeometry(_sphere_size, 64, 64);
+  this._geom = new THREE.SphereBufferGeometry(_sphere_size, 64, 64);
   var _geom_lowres = new THREE.SphereBufferGeometry(_wire_size, 32, 32);
 
   // this.shadow_scene = new THREE.Scene();
