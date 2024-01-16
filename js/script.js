@@ -22,6 +22,8 @@ var poseLandmarks = {
   body: undefined,
 };
 
+var noise = new Noise(Math.random());
+
 const video = document.getElementsByClassName("input_video")[0];
 const out = document.getElementsByClassName("output")[0];
 const canvasCtx5 = out.getContext("2d");
@@ -193,7 +195,7 @@ var init = function () {
   scale = 0.3;
 
   // init blob left hand
-  m_blob_lh = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_lh = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
   m_blob_lh.set_PBR(m_pbr);
   m_blob_lh.set_position(-1 + x, 0.5 + y, 0, scale);
 
@@ -202,7 +204,7 @@ var init = function () {
 
 
   // init blob right hand
-  m_blob_rh = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_rh = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
   m_blob_rh.set_PBR(m_pbr);
   m_blob_rh.set_position(1 + x, 0.5 + y, 0, scale);
   
@@ -211,7 +213,7 @@ var init = function () {
 
 
   // init blob left foot
-  m_blob_lf = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_lf = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
   m_blob_lf.set_PBR(m_pbr);
   m_blob_lf.set_position(-0.5 + x, -0.5 + y, 0, scale);
 
@@ -220,7 +222,7 @@ var init = function () {
 
 
   // init blob right foot
-  m_blob_rf = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_rf = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
   m_blob_rf.set_PBR(m_pbr);
   m_blob_rf.set_position(0.5 + x, -0.5 + y, 0, scale);
 
@@ -229,7 +231,7 @@ var init = function () {
 
 
   // init blob head
-  m_blob_head = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob_head = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
   m_blob_head.set_PBR(m_pbr);
   m_blob_head.set_position(0 + x, 1.5 + y, 0, scale);
 
@@ -237,7 +239,7 @@ var init = function () {
   blob_head_renderer = [m_blob_head.update.bind(m_blob_head)];
 
   // init blob
-  m_blob = new NoiseBlob(m_renderer, m_analyzer, m_light);
+  m_blob = new NoiseBlob(new Noise(Math.random()), m_renderer, m_analyzer, m_light);
   m_blob.set_PBR(m_pbr);
   m_blob.set_position(0 + x, 0.5 + y, 0, scale * 1.5);
 

@@ -1,13 +1,15 @@
-var NoiseBlob = function(_renderer, _analyzer, _light){ 
+var NoiseBlob = function(_noise, _renderer, _analyzer, _light){ 
   this.is_init = false;
   this.show_hdr = true;
-
+  
   this.renderer = _renderer;
   this.audio_analyzer = _analyzer;
   this.light = _light;
 
   this.w = _renderer.w;
   this.h = _renderer.h;
+
+  this.noise = _noise;
 
   this.init_texture();
   this.init_shader();
@@ -27,29 +29,95 @@ NoiseBlob.prototype.update = function(){
       this.shdr_shadow
   ];
   var _shdrs_size = _shdrs.length;
-  for(var i = 0; i < _shdrs_size; i++){
-      _shdrs[i].uniforms.u_is_init.value = this.is_init;
-      _shdrs[i].uniforms.u_t.value = this.timer;
-      
-      // Pike
-      _shdrs[i].uniforms.u_audio_high.value = this.audio_analyzer.get_high();
+  var noiseScale = 0.01; // Adjust the scale of the noise
+  var time = this.renderer.get_timer();
 
-      _shdrs[i].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid();
-      _shdrs[i].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass();
-      _shdrs[i].uniforms.u_audio_level.value = this.audio_analyzer.get_level();
-      _shdrs[i].uniforms.u_audio_history.value = this.audio_analyzer.get_history();
-  }
+  // for(var i = 0; i < _shdrs_size; i++){
+  //   _shdrs[i].uniforms.u_is_init.value = this.is_init;
+  //   _shdrs[i].uniforms.u_t.value = this.timer;
 
-  // this.update_shadow_map();
+  //   // Pike
+  //   _shdrs[i].uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  //   _shdrs[i].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  //   _shdrs[i].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  //   _shdrs[i].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  //   _shdrs[i].uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  // }
+
+  _shdrs[0].uniforms.u_is_init.value = this.is_init;
+  _shdrs[0].uniforms.u_t.value = this.timer;
+  _shdrs[0].uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[0].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[0].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[0].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale)/2;
+  _shdrs[0].uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+
+  _shdrs[1].uniforms.u_is_init.value = this.is_init;
+  _shdrs[1].uniforms.u_t.value = this.timer;
+  _shdrs[1].uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[1].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[1].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[1].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale)*2;
+  _shdrs[1].uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+
+  _shdrs[2].uniforms.u_is_init.value = this.is_init;
+  _shdrs[2].uniforms.u_t.value = this.timer;
+  _shdrs[2].uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[2].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[2].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[2].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[2].uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+
+  _shdrs[3].uniforms.u_is_init.value = this.is_init;
+  _shdrs[3].uniforms.u_t.value = this.timer;
+  _shdrs[3].uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[3].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + this.noise.simplex2(3, 3) * noiseScale) / 4;
+  _shdrs[3].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + this.noise.simplex2(3, 3) * noiseScale) / 5;
+  _shdrs[3].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[3].uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+
+  _shdrs[4].uniforms.u_is_init.value = this.is_init;
+  _shdrs[4].uniforms.u_t.value = this.timer;
+  _shdrs[4].uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + this.noise.simplex2(3, 3) * noiseScale) / 5;
+  _shdrs[4].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + this.noise.simplex2(3, 3) * noiseScale) / 4;
+  _shdrs[4].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + this.noise.simplex2(3, 3) * noiseScale) * 10;
+  _shdrs[4].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[4].uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+
+  _shdrs[5].uniforms.u_is_init.value = this.is_init;
+  _shdrs[5].uniforms.u_t.value = this.timer;
+  _shdrs[5].uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[5].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + this.noise.simplex2(3, 3) * noiseScale) / 4;
+  _shdrs[5].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + this.noise.simplex2(3, 3) * noiseScale)/ 5;
+  _shdrs[5].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[5].uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+
+  _shdrs[6].uniforms.u_is_init.value = this.is_init;
+  _shdrs[6].uniforms.u_t.value = this.timer;
+  _shdrs[6].uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + this.noise.simplex2(3, 3) * noiseScale) / 5;
+  _shdrs[6].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + this.noise.simplex2(3, 3) * noiseScale) / 4;
+  _shdrs[6].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + this.noise.simplex2(3, 3) * noiseScale) * 10;
+  _shdrs[6].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale) *10;
+  _shdrs[6].uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+
+  _shdrs[7].uniforms.u_is_init.value = this.is_init;
+  _shdrs[7].uniforms.u_t.value = this.timer;
+  _shdrs[7].uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[7].uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[7].uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[7].uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+  _shdrs[7].uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + this.noise.simplex2(3, 3) * noiseScale);
+
+
+  this.update_shadow_map();
   this.update_cubemap();
 
   var _cam = this.renderer.get_camera();
   this.renderer.renderer.render( this.scene, _cam);
 
   if(!this.is_init){ 
-      this.is_init = true;
-
-      console.log("NoiseBlob : is initiated");
+    this.is_init = true;
+    console.log("NoiseBlob : is initiated");
   }
 
   this.timer = this.renderer.get_timer();
@@ -59,7 +127,7 @@ NoiseBlob.prototype.update_shadow_map = function(){
   var _shadow_cam = this.light.get_light();
   var _shdow_fbo = this.light.get_shadow_frame_buffer();
 
-  this.renderer.renderer.render(this.shadow_scene, _shadow_cam, _shdow_fbo);
+  // this.renderer.renderer.render(this.shadow_scene, _shadow_cam, _shdow_fbo);
 
   var _light_pos = this.light.get_light_pos();
   _light_pos.applyMatrix4(this.renderer.matrix.modelViewMatrix);
@@ -78,19 +146,19 @@ NoiseBlob.prototype.update_shadow_map = function(){
   var time = this.renderer.get_timer();
 
   // Example of adding noise to the audio high uniform
-  this.shdr_mesh.uniforms.u_audio_high.value = this.audio_analyzer.get_high() * (1 + noise.noise2D(time, 3) * noiseScale);
+  this.shdr_mesh.uniforms.u_audio_high.value = this.audio_analyzer.get_high() 
 
   // Example of adding noise to the audio mid uniform
-  this.shdr_mesh.uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() * (1 + noise.noise2D(time, 3) * noiseScale);
+  this.shdr_mesh.uniforms.u_audio_mid.value = this.audio_analyzer.get_mid() 
 
   // Example of adding noise to the audio bass uniform
-  this.shdr_mesh.uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() * (1 + noise.noise2D(time, 3) * noiseScale);
+  this.shdr_mesh.uniforms.u_audio_bass.value = this.audio_analyzer.get_bass() 
 
   // Example of adding noise to the audio level uniform
-  this.shdr_mesh.uniforms.u_audio_level.value = this.audio_analyzer.get_level() * (1 + noise.noise2D(time, 3) * noiseScale);
+  this.shdr_mesh.uniforms.u_audio_level.value = this.audio_analyzer.get_level() 
 
   // Example of adding noise to the audio history uniform
-  this.shdr_mesh.uniforms.u_audio_history.value = this.audio_analyzer.get_history() * (1 + noise.noise2D(time, 3) * noiseScale);
+  this.shdr_mesh.uniforms.u_audio_history.value = this.audio_analyzer.get_history() 
 
   // Example of adding noise to the audio history uniform
   
