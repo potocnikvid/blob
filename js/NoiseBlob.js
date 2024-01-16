@@ -283,7 +283,7 @@ NoiseBlob.prototype.init_texture = function(){
 
 NoiseBlob.prototype.init_scene = function(){
   // Function to create a 3D star geometry
-  function createCurved3DStarGeometry(radius, innerRadius, numPoints, depth, curveAmount) {
+  function createCurved3DStarGeometry(radius, innerRadius, numPoints, depth, curveAmount, x1, y1) {
     var geometry = new THREE.Geometry();
 
     function addStarPoints(z, inward) {
@@ -291,8 +291,8 @@ NoiseBlob.prototype.init_scene = function(){
           var r = (i % 2 === 0) ? radius : innerRadius;
           var angle = (i / (numPoints * 2)) * Math.PI * 2;
 
-          var x = Math.cos(angle) * r;
-          var y = Math.sin(angle) * r;
+          var x = Math.cos(angle) * r
+          var y = Math.sin(angle) * r 
 
           // Apply curve
           var curve = inward ? -curveAmount : curveAmount;
@@ -304,8 +304,8 @@ NoiseBlob.prototype.init_scene = function(){
 
 
     // Add front and back star points
-    addStarPoints(depth / 2); // Front points
-    addStarPoints(-depth / 2); // Back points
+    addStarPoints(depth / 2, true); // Front points
+    addStarPoints(-depth / 2, false); // Back points
 
     // Create faces for the front and back stars
     for (let i = 0; i < numPoints * 2; i++) {
@@ -333,6 +333,7 @@ NoiseBlob.prototype.init_scene = function(){
     }
 
     geometry.computeFaceNormals(); // Compute normals for lighting
+    console.log(geometry)
     return geometry;
   }
 
@@ -340,18 +341,19 @@ NoiseBlob.prototype.init_scene = function(){
   this.starGeometry = createCurved3DStarGeometry(0.5, 1, 5, 1, 0.2); // 5 points star with a depth of 1
   var material = new THREE.MeshBasicMaterial({ color: 0xfff000, wireframe: false });
   var starMesh = new THREE.Mesh(this.starGeometry, material);
+  
+  this.scene = new THREE.Scene();
 
   // Add starMesh to your scene
-  // scene.add(starMesh);
-  // this._geom = this.starGeometry;
+  // this.scene.add(starMesh);
+  this._geom = this.starGeometry;
 
 
   var _sphere_size = .5;
   var _wire_size = _sphere_size * 0.3;
-  this._geom = new THREE.SphereBufferGeometry(_sphere_size, 64, 64);
+  // this._geom = new THREE.SphereBufferGeometry(_sphere_size, 64, 64);
   var _geom_lowres = new THREE.SphereBufferGeometry(_wire_size, 32, 32);
 
-  this.scene = new THREE.Scene();
   // this.shadow_scene = new THREE.Scene();
 
   this._mesh = new THREE.Mesh(this._geom, this.shdr_mesh);
